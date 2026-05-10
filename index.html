@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AM PRO | Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="login-card">
+    <div class="login-top">
+      <div class="logo-box"><img src="../logo.png" alt="AM PRO" onerror="this.style.opacity='0'"></div>
+      <h1>AM PRO</h1>
+      <p>Admin Control Panel</p>
+    </div>
+    <div class="input-wrap">
+      <i data-lucide="user" class="inp-icon"></i>
+      <input id="adminUser" type="text" placeholder="Admin Username" autocomplete="off">
+    </div>
+    <div class="input-wrap">
+      <i data-lucide="lock" class="inp-icon"></i>
+      <input id="adminPass" type="password" placeholder="Admin Password" autocomplete="off">
+      <button class="eye-btn" onclick="togglePass()"><i id="eyeIcon" data-lucide="eye"></i></button>
+    </div>
+    <button class="btn-primary" onclick="adminLogin()">Sign In as Admin</button>
+    <div id="loginErr" class="login-err hidden"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-box"><img src="../logo.png" alt="AM PRO" onerror="this.style.opacity='0'"></div>
+      <span>AM PRO Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showSection('users')" data-section="users">
+        <i data-lucide="users"></i><span>Users</span>
+      </a>
+      <a class="nav-item" onclick="showSection('tasks')" data-section="tasks">
+        <i data-lucide="check-square"></i><span>Tasks</span>
+      </a>
+      <a class="nav-item" onclick="showSection('create')" data-section="create">
+        <i data-lucide="user-plus"></i><span>Create Account</span>
+      </a>
+    </nav>
+    <button class="btn-signout" onclick="adminLogout()">
+      <i data-lucide="log-out"></i><span>Sign Out</span>
+    </button>
+  </aside>
+
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-bar">
+    <button class="hamburger" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+    <span class="mobile-title">AM PRO Admin</span>
+    <div class="logo-box-sm"><img src="../logo.png" alt="" onerror="this.style.opacity='0'"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ─── USERS SECTION ─── -->
+    <section id="sec-users" class="section active">
+      <div class="sec-header">
+        <div>
+          <h2>Users</h2>
+          <p class="sec-sub">Manage all registered members</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-wrap">
+            <i data-lucide="search"></i>
+            <input id="userSearch" type="text" placeholder="Search users..." oninput="filterUsers()">
+          </div>
+          <button class="btn-refresh" onclick="loadUsers()"><i data-lucide="refresh-cw"></i></button>
+        </div>
+      </div>
+      <div id="userStats" class="stats-row"></div>
+      <div id="usersList" class="users-grid"></div>
+    </section>
+
+    <!-- ─── TASKS SECTION ─── -->
+    <section id="sec-tasks" class="section hidden">
+      <div class="sec-header">
+        <div>
+          <h2>Tasks</h2>
+          <p class="sec-sub">Add or remove tasks for members</p>
+        </div>
+        <button class="btn-primary-sm" onclick="openAddTask()">
+          <i data-lucide="plus"></i> Add Task
+        </button>
+      </div>
+      <div id="tasksList" class="tasks-list"></div>
+    </section>
+
+    <!-- ─── CREATE ACCOUNT SECTION ─── -->
+    <section id="sec-create" class="section hidden">
+      <div class="sec-header">
+        <div>
+          <h2>Create Account</h2>
+          <p class="sec-sub">Register a new member directly</p>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="field"><label>Full Name</label><input id="c_name" placeholder="Full name"></div>
+          <div class="field"><label>Username</label><input id="c_username" placeholder="Username"></div>
+          <div class="field"><label>Email</label><input id="c_email" type="email" placeholder="Email address"></div>
+          <div class="field"><label>Password</label>
+            <div class="pass-field">
+              <input id="c_pass" type="password" placeholder="Password">
+              <button class="eye-btn2" onclick="togglePass2()"><i id="eyeIcon2" data-lucide="eye"></i></button>
+            </div>
+          </div>
+          <div class="field"><label>Gender</label>
+            <select id="c_gender"><option value="">Select Gender</option><option>Male</option><option>Female</option></select>
+          </div>
+          <div class="field"><label>Field</label>
+            <select id="c_field"><option value="">Select Field</option><option>Programming</option><option>Content Creation</option><option>Sports</option></select>
+          </div>
+        </div>
+        <button class="btn-primary full-width" onclick="createAccount()">
+          <i data-lucide="user-plus"></i> Create Account
+        </button>
+        <div id="createMsg" class="msg-box hidden"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ─── USER MODAL ─── -->
+<div id="userModal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle">Edit User</h3>
+        <p id="modalSub" class="modal-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeUserModal()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>New Password (leave blank to keep)</label>
+        <input id="m_pass" type="password" placeholder="New password">
+      </div>
+      <div class="field">
+        <label>Level</label>
+        <div class="level-control">
+          <button onclick="changeLevel(-1)"><i data-lucide="minus"></i></button>
+          <span id="m_level">1</span>
+          <button onclick="changeLevel(1)"><i data-lucide="plus"></i></button>
+        </div>
+        <div id="m_rank" class="rank-chip">---</div>
+      </div>
+      <div class="field">
+        <label>Verification Badge</label>
+        <label class="toggle-row">
+          <input id="m_verified" type="checkbox">
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-label">Verified Account <i class="fa-solid fa-circle-check" style="color:#007aff;font-size:14px;"></i></span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" onclick="deleteUser()"><i data-lucide="trash-2"></i> Delete Account</button>
+      <button class="btn-primary-sm" onclick="saveUser()"><i data-lucide="save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ADD TASK MODAL ─── -->
+<div id="taskModal" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Add Task</h3>
+      <button class="modal-close" onclick="closeTaskModal()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Task Title <span style="color:var(--apple-red)">*</span></label><input id="t_title" placeholder="Short task title (shown big)"></div>
+      <div class="field"><label>Description <span style="color:var(--text-3);font-weight:400">(optional)</span></label><textarea id="t_body" placeholder="More details about this task..." rows="3" style="width:100%;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--stroke);background:rgba(255,255,255,0.03);color:var(--text);font-family:inherit;font-size:13px;resize:vertical;outline:none;"></textarea></div>
+      <div class="field"><label>Link <span style="color:var(--text-3);font-weight:400">(optional)</span></label><input id="t_link" type="url" placeholder="https://..."></div>
+      <div class="field"><label>Assign To</label>
+        <select id="t_user">
+          <option value="">All Users</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary-sm full-width" onclick="addTask()"><i data-lucide="plus"></i> Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
